@@ -21,11 +21,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ matrix.node-version }} (with npm cache)
+      if: ${{ hashFiles('package-lock.json', 'npm-shrinkwrap.json') != '' }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Use Node.js ${{ matrix.node-version }}
+      if: ${{ hashFiles('package-lock.json', 'npm-shrinkwrap.json') == '' }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+    - if: ${{ hashFiles('package-lock.json', 'npm-shrinkwrap.json') != '' }}
+      run: npm ci
+    - if: ${{ hashFiles('package-lock.json', 'npm-shrinkwrap.json') != '' }}
+      run: npm run build --if-present
+    - if: ${{ hashFiles('package-lock.json', 'npm-shrinkwrap.json') != '' }}
+      run: npm test
+    - run: node --check server.js
