@@ -38,7 +38,7 @@ app.post('/submit-feedback', async (req, res) => {
 });
 
 // Admin route to view feedback
-app.get('/admin/feedback', async (req, res) => {
+app.get('/admin/feedback', async (_req, res) => {
     try {
         const feedbacks = await Feedback.find().sort({ submittedAt: -1 });
         res.send(`<pre>${JSON.stringify(feedbacks, null, 2)}</pre>`);
